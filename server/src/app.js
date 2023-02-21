@@ -4,6 +4,7 @@ const path = require("path")
 const morgan = require("morgan")
 
 const planetsRouter = require("./routes/planets.router")
+const getAllLaunches = require("./routes/launches/launches.controller")
 
 
 const app = express()
@@ -27,6 +28,7 @@ app.use(express.static(path.join(__dirname,"..","public")))
 
 
 app.use("/planets",planetsRouter )
+app.use("/launches",getAllLaunches)
 app.get("/",(req,res) => {
     res.sendFile(path.join(__dirname,"..","public","index.html"))
 })
