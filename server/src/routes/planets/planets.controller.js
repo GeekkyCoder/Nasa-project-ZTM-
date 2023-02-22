@@ -1,4 +1,4 @@
-const {planets} = require("../modals/planets.modal");
+const {planets} = require("../../modals/planets.modal");
 
 
 function getAllPlanets(req, res) {

@@ -1,34 +1,34 @@
-const map = new Map()
+const launches = new Map();
 
-const launches = [{
-  flightNumber:1,
-  mission:"Kepler Exploration X",
-  rocket:"Explorer IS1",
+let latestFlightNumber = 1;
+
+const launch = {
+  flightNumber: 1,
+  mission: "Kepler Exploration X",
+  rocket: "Explorer IS1",
   launchDate: new Date("27 december 2030"),
-  destination:"Kepler-442 b",
-  customers:[
-    "Faraz",
-    "ZTM"
-  ],
-  success:true,
-  upcoming:true,
-  target:""
-},
-{
-flightNumber:2,
-mission:"Kepler Exploration X",
-rocket:"Explorer IS1",
-launchDate: new Date("27 december 2030"),
-destination:"Kepler-442 b",
-customers:[
-  "Nasa",
-  "Tesla"
-],
-success:true,
-upcoming:true,
-target:""
-}]
+  destination: "Kepler-442 b",
+  customers: ["Faraz", "ZTM"],
+  success: true,
+  upcoming: true,
+  target: "",
+};
 
-// map.set(launches.flightNumber,launches)
+function getAllLaunches() {
+  return Array.from(launches.values());
+}
 
-module.exports = launches
+function addNewLaunch(launch) {
+  latestFlightNumber++;
+  launches.set(
+    latestFlightNumber,
+    Object.assign(launch, {
+      success: true,
+      upcoming: true,
+      customers: ["Zero to Mastery", "NASA"],
+      flightNumber: latestFlightNumber,
+    })
+  );
+}
+
+module.exports = { getAllLaunches, addNewLaunch };
