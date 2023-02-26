@@ -1,8 +1,5 @@
-const launches = new Map();
 const launchesDB = require("./launches.mongoos");
 const planetsDB = require("./planets.mongoos");
-
-// let latestFlightNumber = 1;
 
 const DEFAULT_FLIGHT_NUM = 100;
 
@@ -20,16 +17,15 @@ const launch = {
 saveLaunch(launch);
 
 async function getAllLaunches() {
-  // return Array.from(launches.values());
   return await launchesDB.find({});
 }
 
 async function existLaunchWithId(flightNumber) {
   const launchItem = await launchesDB.findOne({
-    flightNumber: flightNumber
-  })
+    flightNumber: flightNumber,
+  });
 
-  return launchItem.flightNumber
+  return launchItem.flightNumber;
 }
 
 // function abortLaunchWithId(flightNumber) {
@@ -41,13 +37,17 @@ async function existLaunchWithId(flightNumber) {
 
 async function abortLaunchWithId(flightNumber) {
   // delete one takes the filter object as it first praramter, we want to filter with the flightNumber and delete that document from db!
-  const abortedLaunch = await launchesDB.deleteOne({
-     flightNumber: flightNumber
-  })
+  const abortedLaunch = await launchesDB.updateOne(
+    {
+      flightNumber: flightNumber,
+    },
+    {
+      sucess: false,
+      upcoming: false,
+    }
+  );
 
-  abortedLaunch.success = false 
-  abortedLaunch.upcoming =false 
-  return abortedLaunch
+  return abortedLaunch.modifiedCount === 1;
 }
 
 async function saveLaunch(launch) {
@@ -59,9 +59,9 @@ async function saveLaunch(launch) {
     keplerName: launch.target,
   });
 
-   // bug to fix 
+  // bug to fix
   if (!planet) {
-    // throw new Error("no matching planet found!") 
+    // throw new Error("no matching planet found!")
   }
 
   // findOneAndUpdate only returns that 2nd argument which is update object! ignoring the setOnInsert property!
@@ -91,7 +91,7 @@ async function saveLaunch(launch) {
 // }
 
 async function scheduleNewLaunch(launch) {
-  const latestFlightNumber = await getLatestFlightNumber() + 1;
+  const latestFlightNumber = (await getLatestFlightNumber()) + 1;
   const newLaunch = Object.assign(launch, {
     success: true,
     upcoming: true,
@@ -105,8 +105,6 @@ async function scheduleNewLaunch(launch) {
 
 async function getLatestFlightNumber() {
   const latestLaunch = await launchesDB.findOne().sort("-flightNumber");
-  console.log(`latest Launch: ${latestLaunch}`);
-
   if (!latestLaunch) {
     return DEFAULT_FLIGHT_NUM;
   }
@@ -120,5 +118,5 @@ module.exports = {
   scheduleNewLaunch,
   existLaunchWithId,
   // abortLaunchWithId,
-  abortLaunchWithId
+  abortLaunchWithId,
 };
