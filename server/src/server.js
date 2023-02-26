@@ -19,9 +19,7 @@ mongoose.connection.on("error", (err) => {
 })
 
 async function startServer() {
-   await mongoose.connect(MONGO_URL, ()=> {
-    console.log("connected")
-   })
+   await mongoose.connect(MONGO_URL)
    await loadPlanetsData()
   server.listen(PORT,()=> {
     console.log(`listening on port ${PORT}`)
