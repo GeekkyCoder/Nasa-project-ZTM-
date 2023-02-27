@@ -3,6 +3,8 @@ const mongoose = require("mongoose")
 
 const app = require("./app")
 const {loadPlanetsData} = require("./modals/planets.modal")
+const {loadLaunchData} = require("./modals/launches.modal")
+
 
 const MONGO_URL = "mongodb+srv://nasa-api:PnzsSHxFSmV6E02i@nasacluster.ztif9db.mongodb.net/?retryWrites=true&w=majority"
 
@@ -21,6 +23,7 @@ mongoose.connection.on("error", (err) => {
 async function startServer() {
    await mongoose.connect(MONGO_URL)
    await loadPlanetsData()
+   await loadLaunchData()
   server.listen(PORT,()=> {
     console.log(`listening on port ${PORT}`)
 })

@@ -3,7 +3,7 @@ const app = require("../../app");
 
 describe("Test GET /launches", () => {
   test("it should respond with 200 status", async () => {
-    const response = await request(app).get("/launches");
+    const response = await request(app).get("/v1/launches");
     expect(response.statusCode).toBe(200);
   });
 });
@@ -32,7 +32,7 @@ describe("Test POST /launches", () => {
   // success
   test("it should respond with 201 created", async () => {
     const response = await request(app)
-      .post("/launches")
+      .post("/v1/launches")
       .send(completeLaunchData)
       .expect('Content-Type', /json/)
       .expect(201)
@@ -47,7 +47,7 @@ describe("Test POST /launches", () => {
    // error cases for missing required properties
   test("it should catch missing required properties", async ()=> {
         const response = await request(app)
-          .post("/launches")
+          .post("/v1/launches")
           .send(launchDataWithoutDate)
           .expect('Content-Type', /json/)
           .expect(400)
@@ -61,7 +61,7 @@ describe("Test POST /launches", () => {
 //   error case for invalid date format 
   test("it should catch invalid date format", async ()=> {
     const response = await request(app)
-    .post("/launches")
+    .post("/v1/launches")
     .send(launchDataWithInvalidDate)
     .expect('Content-Type', /json/)
     .expect(400)
