@@ -36,7 +36,6 @@ async function existLaunchWithId(flightNumber) {
 // }
 
 async function abortLaunchWithId(flightNumber) {
-  // delete one takes the filter object as it first praramter, we want to filter with the flightNumber and delete that document from db!
   const abortedLaunch = await launchesDB.updateOne(
     {
       flightNumber: flightNumber,
