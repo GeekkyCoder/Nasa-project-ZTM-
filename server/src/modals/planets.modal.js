@@ -26,9 +26,6 @@ function loadPlanetsData() {
       )
       .on("data", async (data) => {
         if (isHabitablePlanet(data)) {
-          // habitablePlanets.push(data);
-          // peroform following operation here:
-          // insert + update = upsert
           try {
             await savePlanet(data);
           } catch (err) {

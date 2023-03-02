@@ -41,7 +41,28 @@ async function loadLaunchData() {
       ],
     },
   });
+  const launchesData = response.data.docs 
+  for(let launchDoc of launchesData){
+    const payloads = launchDoc['payloads']
+    const customers = payloads.flatMap(payload => {
+      return payload['customers']
+    })
+
+    const launch = {
+      flightNumber: launchDoc['flight_number'],
+      mission:launchDoc['name'],
+      rocket:launchDoc['rocket']['name'],
+      launchDate:launchDoc['date_local'],
+      upcoming:launchDoc['upcoming'],
+      success:launchDoc['success'],
+      customers
+    }
+
+    console.log(`${launch.flightNumber} ${launch.mission}`)
+  }
 }
+
+
 
 async function getAllLaunches() {
   return await launchesDB.find({});
@@ -54,13 +75,6 @@ async function existLaunchWithId(flightNumber) {
 
   return launchItem.flightNumber;
 }
-
-// function abortLaunchWithId(flightNumber) {
-//   const aborted = launches.get(flightNumber);
-//   aborted.success = false;
-//   aborted.upcoming = false;
-//   return aborted;
-// }
 
 async function abortLaunchWithId(flightNumber) {
   const abortedLaunch = await launchesDB.updateOne(
@@ -77,10 +91,6 @@ async function abortLaunchWithId(flightNumber) {
 }
 
 async function saveLaunch(launch) {
-  // findOne function returns true only if the value matches the key of the object!
-  /*
-   is used to retrieve a single document from a collection that matches a specified query criteria. Here's how it works:
-   */
   const planet = await planetsDB.findOne({
     keplerName: launch.target,
   });
@@ -101,20 +111,6 @@ async function saveLaunch(launch) {
     }
   );
 }
-
-// async function addNewLaunch(launch) {
-//   launches.set(
-//     latestFlightNumber,
-//     Object.assign(launch, {
-//       success: true,
-//       upcoming: true,
-//       target: "kepler-1295",
-//       customers: ["Zero to Mastery", "NASA"],
-//       flightNumber: latestFlightNumber,
-//     })
-//   );
-//   latestFlightNumber++;
-// }
 
 async function scheduleNewLaunch(launch) {
   const latestFlightNumber = (await getLatestFlightNumber()) + 1;
@@ -141,9 +137,7 @@ async function getLatestFlightNumber() {
 module.exports = {
   loadLaunchData,
   getAllLaunches,
-  // addNewLaunch,
   scheduleNewLaunch,
   existLaunchWithId,
-  // abortLaunchWithId,
   abortLaunchWithId,
 };
