@@ -36,45 +36,51 @@ async function loadLaunchData() {
 
 async function populateLaunches() {
   console.log("downloading launch data...");
-  const response = await axios.post(SPACEX_API_URL, {
-    query: {},
-    options: {
-      pagination: false,
-      populate: [
-        {
-          path: "rocket",
-          select: {
-            name: 1,
+  try{
+    const response = await axios.post(SPACEX_API_URL, {
+      query: {},
+      options: {
+        pagination: false,
+        populate: [
+          {
+            path: "rocket",
+            select: {
+              name: 1,
+            },
           },
-        },
-        {
-          path: "payloads",
-          select: {
-            customers: 1,
+          {
+            path: "payloads",
+            select: {
+              customers: 1,
+            },
           },
-        },
-      ],
-    },
-  });
-  const launchesData = response.data.docs;
-  for (let launchDoc of launchesData) {
-    const payloads = launchDoc["payloads"];
-    const customers = payloads.flatMap((payload) => {
-      return payload["customers"];
+        ],
+      },
     });
-
-    const launch = {
-      flightNumber: launchDoc["flight_number"],
-      mission: launchDoc["name"],
-      rocket: launchDoc["rocket"]["name"],
-      launchDate: launchDoc["date_local"],
-      upcoming: launchDoc["upcoming"],
-      success: launchDoc["success"],
-      customers,
-    };
-
-    console.log(`${launch.flightNumber} ${launch.mission}`);
+    const launchesData = response.data.docs;
+    for (let launchDoc of launchesData) {
+      const payloads = launchDoc["payloads"];
+      const customers = payloads.flatMap((payload) => {
+        return payload["customers"];
+      });
+  
+      const launch = {
+        flightNumber: launchDoc["flight_number"],
+        mission: launchDoc["name"],
+        rocket: launchDoc["rocket"]["name"],
+        launchDate: launchDoc["date_local"],
+        upcoming: launchDoc["upcoming"],
+        success: launchDoc["success"],
+        customers,
+      };
+     
+      // save laucnhes data in database
+      await saveLaunch(launch)
+    }
+  }catch(err){
+     console.log(`error: ${err}`)
   }
+ 
 }
 
 async function getAllLaunches() {
@@ -108,15 +114,6 @@ async function abortLaunchWithId(flightNumber) {
 }
 
 async function saveLaunch(launch) {
-  const planet = await planetsDB.findOne({
-    keplerName: launch.target,
-  });
-
-  // bug to fix
-  if (!planet) {
-    // throw new Error("no matching planet found!")
-  }
-
   // findOneAndUpdate only returns that 2nd argument which is update object! ignoring the setOnInsert property!
   await launchesDB.findOneAndUpdate(
     {
@@ -130,6 +127,14 @@ async function saveLaunch(launch) {
 }
 
 async function scheduleNewLaunch(launch) {
+  const planet = await planetsDB.findOne({
+    keplerName: launch.target,
+  });
+
+  if (!planet) {
+    throw new Error("no matching planet found!")
+  }
+
   const latestFlightNumber = (await getLatestFlightNumber()) + 1;
   const newLaunch = Object.assign(launch, {
     success: true,
