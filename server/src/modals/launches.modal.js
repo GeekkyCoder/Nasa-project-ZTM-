@@ -5,19 +5,6 @@ const planetsDB = require("./planets.mongoos");
 
 const DEFAULT_FLIGHT_NUM = 100;
 
-const launch = {
-  flightNumber: 1, //flightNumber
-  mission: "Kepler Exploration X", //name
-  rocket: "Explorer IS1", //rocket.name
-  launchDate: new Date("27 december 2030"), // date_local
-  customers: ["Faraz", "ZTM"], //payload.customers for each payload
-  success: true, // success
-  upcoming: true, // upcoming
-  target: "Kepler-442 b", // not applicable
-};
-
-saveLaunch(launch);
-
 const SPACEX_API_URL = "https://api.spacexdata.com/v4/launches/query";
 
 async function loadLaunchData() {
