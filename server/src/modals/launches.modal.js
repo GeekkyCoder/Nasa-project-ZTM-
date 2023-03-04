@@ -83,8 +83,10 @@ async function populateLaunches() {
  
 }
 
-async function getAllLaunches() {
-  return await launchesDB.find({});
+async function getAllLaunches(skip,limit) {
+  return await launchesDB.find({},{'_id':0,'_v':0})
+  .skip(skip)
+  .limit(limit)
 }
 
 async function findLaunch(filter) {
